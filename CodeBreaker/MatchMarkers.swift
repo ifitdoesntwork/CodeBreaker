@@ -41,5 +41,13 @@ struct MatchMarkers: View {
 }
 
 #Preview {
-    MatchMarkers(matches: [.exact, .inexact, .noMatch])
+    let matches = [Match.exact, .inexact, .noMatch]
+    
+    HStack {
+        ForEach(matches.indices, id: \.self) { index in
+            Circle()
+        }
+        MatchMarkers(matches: matches)
+    }
+    .padding()
 }

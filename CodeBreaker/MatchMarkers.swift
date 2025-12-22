@@ -47,14 +47,32 @@ struct MatchMarkers: View {
     }
 }
 
-#Preview {
-    let matches = [Match.exact, .inexact, .noMatch]
+// MARK: - Preview
+
+struct MatchMarkersPreview: View {
+    let matches: [Match]
     
-    HStack {
-        ForEach(matches.indices, id: \.self) { index in
-            Circle()
+    var body: some View {
+        HStack {
+            ForEach(matches.indices, id: \.self) { index in
+                Circle()
+            }
+            MatchMarkers(matches: matches)
         }
-        MatchMarkers(matches: matches)
+        .padding()
     }
-    .padding()
+}
+
+#Preview {
+    VStack(alignment: .leading) {
+        MatchMarkersPreview(matches: [.exact, .inexact, .inexact])
+        MatchMarkersPreview(matches: [.exact, .noMatch, .noMatch])
+        MatchMarkersPreview(matches: [.exact, .inexact, .inexact, .exact])
+        MatchMarkersPreview(matches: [.exact, .inexact, .inexact, .noMatch])
+        MatchMarkersPreview(matches: [.exact, .inexact, .noMatch, .noMatch])
+        MatchMarkersPreview(matches: [.noMatch, .exact, .inexact, .exact, .exact, .noMatch])
+        MatchMarkersPreview(matches: [.inexact, .exact, .inexact, .exact, .exact, .inexact])
+        MatchMarkersPreview(matches: [.inexact, .exact, .inexact, .exact, .inexact])
+        MatchMarkersPreview(matches: [.noMatch, .exact, .inexact, .noMatch, .inexact])
+    }
 }

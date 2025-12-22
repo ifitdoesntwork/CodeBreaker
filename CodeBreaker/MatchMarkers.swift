@@ -17,25 +17,32 @@ struct MatchMarkers: View {
     var matches: [Match]
     
     var body: some View {
-        VStack {
-            HStack {
-                matchMarker(peg: 0)
-                matchMarker(peg: 1)
-            }
-            HStack {
-                matchMarker(peg: 2)
-                matchMarker(peg: 3)
+        let indices = matches.indices
+            .filter { $0 % 2 == .zero }
+        
+        HStack {
+            ForEach(indices, id: \.self) { index in
+                VStack {
+                    matchMarker(peg: index)
+                    matchMarker(peg: index + 1)
+                }
             }
         }
     }
     
     func matchMarker(peg: Int) -> some View {
-        let exactCount: Int = matches.count(where: { match in match == .exact })
-        let foundCount: Int = matches.count(where: { match in match != .noMatch })
+        let exactCount: Int = matches
+            .count(where: { match in match == .exact })
+        
+        let foundCount: Int = matches
+            .count(where: { match in match != .noMatch })
         
         return Circle()
             .fill(exactCount > peg ? Color.primary : .clear)
-            .strokeBorder(foundCount > peg ? Color.primary : .clear, lineWidth: 2)
+            .strokeBorder(
+                foundCount > peg ? Color.primary : .clear,
+                lineWidth: 2
+            )
             .aspectRatio(contentMode: .fit)
     }
 }

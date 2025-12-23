@@ -17,11 +17,11 @@ struct MatchMarkers: View {
     var matches: [Match]
     
     var body: some View {
-        let indices = matches.indices
+        let evenIndices = matches.indices
             .filter { $0 % 2 == .zero }
         
         HStack {
-            ForEach(indices, id: \.self) { index in
+            ForEach(evenIndices, id: \.self) { index in
                 VStack {
                     matchMarker(peg: index)
                     matchMarker(peg: index + 1)
@@ -31,11 +31,11 @@ struct MatchMarkers: View {
     }
     
     func matchMarker(peg: Int) -> some View {
-        let exactCount: Int = matches
-            .count(where: { match in match == .exact })
+        let exactCount = matches
+            .count { $0 == .exact }
         
-        let foundCount: Int = matches
-            .count(where: { match in match != .noMatch })
+        let foundCount = matches
+            .count { $0 != .noMatch }
         
         return Circle()
             .fill(exactCount > peg ? Color.primary : .clear)

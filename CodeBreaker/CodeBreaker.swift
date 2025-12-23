@@ -10,14 +10,22 @@ import SwiftUI
 typealias Peg = Color
 
 struct CodeBreaker {
-    var masterCode = Code(kind: .master)
-    var guess = Code(kind: .guess)
+    let masterCode: Code
+    var guess: Code
     var attempts = [Code]()
     let pegChoices: [Peg]
     
-    init(pegChoices: [Peg] = [.red, .green, .blue, .yellow]) {
-        self.pegChoices = pegChoices
+    init(
+        pegCount: Int,
+        pegChoices: [Peg] = [.red, .green, .blue, .yellow],
+    ) {
+        var masterCode = Code(kind: .master, pegCount: pegCount)
         masterCode.randomize(from: pegChoices)
+        self.masterCode = masterCode
+        
+        self.guess = .init(kind: .guess, pegCount: pegCount)
+        self.pegChoices = pegChoices
+        
         print(masterCode)
     }
     
@@ -29,11 +37,9 @@ struct CodeBreaker {
             return
         }
         
-        attempts
-            .append(.init(
-                kind: .attempt(guess.match(against: masterCode)),
-                pegs: guess.pegs
-            ))
+        var attempt = guess
+        attempt.kind = .attempt(guess.match(against: masterCode))
+        attempts.append(attempt)
     }
     
     mutating func changeGuessPeg(at index: Int) {
@@ -47,7 +53,15 @@ struct CodeBreaker {
 
 struct Code {
     var kind: Kind
-    var pegs = [Peg](repeating: Code.missing, count: 4)
+    var pegs: [Peg]
+    
+    init(
+        kind: Kind,
+        pegCount: Int
+    ) {
+        self.kind = kind
+        self.pegs = .init(repeating: Code.missing, count: pegCount)
+    }
     
     enum Kind: Equatable {
         case master
@@ -57,7 +71,7 @@ struct Code {
     }
     
     mutating func randomize(from pegChoices: [Peg]) {
-        pegChoices.indices
+        pegs.indices
             .forEach {
                 pegs[$0] = pegChoices.randomElement() ?? Code.missing
             }
@@ -66,7 +80,7 @@ struct Code {
     var matches: [Match] {
         switch kind {
         case .attempt(let matches): matches
-        default: .init(repeating: .noMatch, count: 4)
+        default: .init(repeating: .noMatch, count: pegs.count)
         }
     }
     

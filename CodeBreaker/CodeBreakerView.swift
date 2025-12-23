@@ -11,7 +11,10 @@ struct CodeBreakerView: View {
     @State var game = newGame
     
     static var newGame: CodeBreaker {
-        .init(pegChoices: [.brown, .yellow, .orange, .primary])
+        .init(
+            pegCount: .random(in: 3...6),
+            pegChoices: [.brown, .yellow, .orange, .primary]
+        )
     }
     
     var body: some View {

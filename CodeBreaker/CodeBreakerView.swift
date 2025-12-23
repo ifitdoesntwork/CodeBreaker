@@ -13,7 +13,9 @@ struct CodeBreakerView: View {
     static var newGame: CodeBreaker {
         .init(
             pegCount: .random(in: 3...6),
-            pegChoices: [.brown, .yellow, .orange, .primary]
+            pegChoices: Bool.random()
+                ? ["😀", "😨", "🥳", "🤪", "😎"]
+                : [PegColor.red, .green, .blue, .yellow].map(\.rawValue)
         )
     }
     
@@ -48,21 +50,35 @@ struct CodeBreakerView: View {
     }
     
     func peg(for code: Code, at index: Int) -> some View {
-        RoundedRectangle(cornerRadius: 10)
-            .overlay {
-                if code.pegs[index] == Code.missing {
-                    RoundedRectangle(cornerRadius: 10)
-                        .strokeBorder(.gray)
-                }
-            }
+        pegView(for: code.pegs[index])
             .contentShape(Rectangle())
             .aspectRatio(contentMode: .fit)
-            .foregroundStyle(code.pegs[index])
             .onTapGesture {
                 if code.kind == .guess {
                     game.changeGuessPeg(at: index)
                 }
             }
+    }
+    
+    @ViewBuilder
+    func pegView(for peg: Peg) -> some View {
+        if
+            let pegColor = PegColor.allCases
+                .first(where: { $0.rawValue == peg })
+        {
+            RoundedRectangle(cornerRadius: 10)
+                .foregroundStyle(pegColor.color)
+        } else if peg == .missing {
+            RoundedRectangle(cornerRadius: 10)
+                .strokeBorder(.gray)
+        } else {
+            Color.clear
+                .overlay {
+                    Text(peg)
+                        .font(.system(size: 120))
+                        .minimumScaleFactor(9 / 120)
+                }
+        }
     }
     
     var guessButton: some View {
@@ -73,6 +89,22 @@ struct CodeBreakerView: View {
         }
         .font(.system(size: 80))
         .minimumScaleFactor(0.1)
+    }
+}
+
+extension PegColor {
+    
+    var color: Color {
+        switch self {
+        case .red:
+            .red
+        case .green:
+            .green
+        case .blue:
+            .blue
+        case .yellow:
+            .yellow
+        }
     }
 }
 

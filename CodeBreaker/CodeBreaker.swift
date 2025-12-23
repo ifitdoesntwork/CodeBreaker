@@ -5,9 +5,7 @@
 //  Created by Denis Avdeev on 23.12.2025.
 //
 
-import SwiftUI
-
-typealias Peg = Color
+import Foundation
 
 struct CodeBreaker {
     let masterCode: Code
@@ -17,7 +15,7 @@ struct CodeBreaker {
     
     init(
         pegCount: Int,
-        pegChoices: [Peg] = [.red, .green, .blue, .yellow],
+        pegChoices: [Peg],
     ) {
         var masterCode = Code(kind: .master, pegCount: pegCount)
         masterCode.randomize(from: pegChoices)
@@ -32,7 +30,7 @@ struct CodeBreaker {
     mutating func attemptGuess() {
         guard
             !attempts.contains(where: { $0.pegs == guess.pegs })
-            && !guess.pegs.contains(Code.missing)
+            && !guess.pegs.contains(.missing)
         else {
             return
         }
@@ -47,7 +45,7 @@ struct CodeBreaker {
             .firstIndex(of: guess.pegs[index])
             .map { pegChoices[($0 + 1) % pegChoices.count] }
         ?? pegChoices.first
-        ?? Code.missing
+        ?? .missing
     }
 }
 
@@ -60,7 +58,7 @@ struct Code {
         pegCount: Int
     ) {
         self.kind = kind
-        self.pegs = .init(repeating: Code.missing, count: pegCount)
+        self.pegs = .init(repeating: .missing, count: pegCount)
     }
     
     enum Kind: Equatable {
@@ -73,7 +71,7 @@ struct Code {
     mutating func randomize(from pegChoices: [Peg]) {
         pegs.indices
             .forEach {
-                pegs[$0] = pegChoices.randomElement() ?? Code.missing
+                pegs[$0] = pegChoices.randomElement() ?? .missing
             }
     }
     
@@ -83,8 +81,6 @@ struct Code {
         default: .init(repeating: .noMatch, count: pegs.count)
         }
     }
-    
-    static let missing = Peg.clear
     
     func match(against otherCode: Code) -> [Match] {
         var results: [Match] = Array(repeating: .noMatch, count: pegs.count)
@@ -105,4 +101,17 @@ struct Code {
         }
         return results
     }
+}
+
+typealias Peg = String
+
+extension String {
+    static let missing = "missing"
+}
+
+enum PegColor: String, CaseIterable {
+    case red
+    case green
+    case blue
+    case yellow
 }

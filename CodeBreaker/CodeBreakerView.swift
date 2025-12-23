@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct CodeBreakerView: View {
-    @State var game = CodeBreaker(
-        pegChoices: [.brown, .yellow, .orange, .primary]
-    )
+    @State var game = newGame
+    
+    static var newGame: CodeBreaker {
+        .init(pegChoices: [.brown, .yellow, .orange, .primary])
+    }
     
     var body: some View {
         VStack {
@@ -20,6 +22,9 @@ struct CodeBreakerView: View {
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     view(for: game.attempts[index])
                 }
+            }
+            Button("Restart") {
+                game = Self.newGame
             }
         }
         .padding()

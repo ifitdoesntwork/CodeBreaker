@@ -8,21 +8,8 @@
 import SwiftUI
 
 struct CodeBreakerView: View {
-    @State var game = newGame
-    
-    static let themes = [
-        ["😀", "😨", "🥳", "🤪", "😎"],
-        ["🚗", "🚲", "🛩", "⛵"],
-        ["red", "green", "blue", "yellow"],
-        ["brown", "yellow", "orange", "primary"]
-    ]
-    
-    static var newGame: CodeBreaker {
-        .init(
-            pegCount: .random(in: 3...6),
-            pegChoices: themes[.random(in: 0..<themes.count)]
-        )
-    }
+    @State var themedGame = ThemedCodeBreaker()
+    var game: CodeBreaker { themedGame.game }
     
     var body: some View {
         VStack {
@@ -33,8 +20,12 @@ struct CodeBreakerView: View {
                     view(for: game.attempts[index])
                 }
             }
-            Button("Restart") {
-                game = Self.newGame
+            HStack {
+                Text(themedGame.name)
+                Spacer()
+                Button("Restart") {
+                    themedGame = ThemedCodeBreaker()
+                }
             }
         }
         .padding()
@@ -60,7 +51,7 @@ struct CodeBreakerView: View {
             .aspectRatio(contentMode: .fit)
             .onTapGesture {
                 if code.kind == .guess {
-                    game.changeGuessPeg(at: index)
+                    themedGame.game.changeGuessPeg(at: index)
                 }
             }
     }
@@ -86,11 +77,33 @@ struct CodeBreakerView: View {
     var guessButton: some View {
         Button("Guess") {
             withAnimation {
-                game.attemptGuess()
+                themedGame.game.attemptGuess()
             }
         }
         .font(.system(size: 80))
         .minimumScaleFactor(0.1)
+    }
+    
+    struct ThemedCodeBreaker {
+        var game: CodeBreaker
+        let name: String
+        
+        static let themes = [
+            "Faces": ["😀", "😨", "🥳", "🤪", "😎"],
+            "Vehicles": ["🚗", "🚲", "🛩", "⛵"],
+            "Standard Colors": ["red", "green", "blue", "yellow"],
+            "Earth Tone": ["brown", "yellow", "orange", "primary"]
+        ]
+        
+        init() {
+            name = Array(Self.themes.keys)[
+                .random(in: 0..<Self.themes.count)
+            ]
+            game = .init(
+                pegCount: .random(in: 3...6),
+                pegChoices: Self.themes[name] ?? []
+            )
+        }
     }
 }
 

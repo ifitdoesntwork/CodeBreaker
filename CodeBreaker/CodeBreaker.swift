@@ -108,10 +108,3 @@ typealias Peg = String
 extension String {
     static let missing = "missing"
 }
-
-enum PegColor: String, CaseIterable {
-    case red
-    case green
-    case blue
-    case yellow
-}

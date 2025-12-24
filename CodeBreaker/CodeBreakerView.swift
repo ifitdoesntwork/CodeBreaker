@@ -15,7 +15,7 @@ struct CodeBreakerView: View {
             pegCount: .random(in: 3...6),
             pegChoices: Bool.random()
                 ? ["😀", "😨", "🥳", "🤪", "😎"]
-                : [PegColor.red, .green, .blue, .yellow].map(\.rawValue)
+                : ["red", "green", "blue", "yellow"]
         )
     }
     
@@ -62,12 +62,9 @@ struct CodeBreakerView: View {
     
     @ViewBuilder
     func pegView(for peg: Peg) -> some View {
-        if
-            let pegColor = PegColor.allCases
-                .first(where: { $0.rawValue == peg })
-        {
+        if let color = Color(named: peg) {
             RoundedRectangle(cornerRadius: 10)
-                .foregroundStyle(pegColor.color)
+                .foregroundStyle(color)
         } else if peg == .missing {
             RoundedRectangle(cornerRadius: 10)
                 .strokeBorder(.gray)
@@ -92,19 +89,22 @@ struct CodeBreakerView: View {
     }
 }
 
-extension PegColor {
+extension Color {
+    private static let namedColors: [String: Color] = [
+        "red": .red, "green": .green, "blue": .blue,
+        "yellow": .yellow, "orange": .orange, "purple": .purple,
+        "pink": .pink, "cyan": .cyan, "indigo": .indigo,
+        "mint": .mint, "teal": .teal, "brown": .brown,
+        "gray": .gray, "black": .black, "white": .white,
+        "clear": .clear, "primary": .primary, "secondary": .secondary,
+        "accent": .accentColor
+    ]
     
-    var color: Color {
-        switch self {
-        case .red:
-            .red
-        case .green:
-            .green
-        case .blue:
-            .blue
-        case .yellow:
-            .yellow
+    init?(named name: String) {
+        guard let color = Self.namedColors[name] else {
+            return nil
         }
+        self = color
     }
 }
 

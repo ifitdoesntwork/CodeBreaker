@@ -10,12 +10,17 @@ import SwiftUI
 struct CodeBreakerView: View {
     @State var game = newGame
     
+    static let themes = [
+        ["😀", "😨", "🥳", "🤪", "😎"],
+        ["🚗", "🚲", "🛩", "⛵"],
+        ["red", "green", "blue", "yellow"],
+        ["brown", "yellow", "orange", "primary"]
+    ]
+    
     static var newGame: CodeBreaker {
         .init(
             pegCount: .random(in: 3...6),
-            pegChoices: Bool.random()
-                ? ["😀", "😨", "🥳", "🤪", "😎"]
-                : ["red", "green", "blue", "yellow"]
+            pegChoices: themes[.random(in: 0..<themes.count)]
         )
     }
     

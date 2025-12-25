@@ -9,7 +9,11 @@ import SwiftUI
 
 struct CodeBreakerView: View {
     @State var themedGame = ThemedCodeBreaker()
-    var game: CodeBreaker { themedGame.game }
+    
+    var game: CodeBreaker {
+        get { themedGame.game }
+        nonmutating set { themedGame.game = newValue }
+    }
     
     var body: some View {
         VStack {
@@ -36,9 +40,12 @@ struct CodeBreakerView: View {
             ForEach(code.pegs.indices, id: \.self) { index in
                 peg(for: code, at: index)
             }
-            MatchMarkers(matches: code.matches)
+            Color.clear
+                .aspectRatio(contentMode: .fit)
                 .overlay {
-                    if code.kind == .guess {
+                    if let matches = code.matches {
+                        MatchMarkers(matches: matches)
+                    } else if code.kind == .guess {
                         guessButton
                     }
                 }
@@ -51,7 +58,7 @@ struct CodeBreakerView: View {
             .aspectRatio(contentMode: .fit)
             .onTapGesture {
                 if code.kind == .guess {
-                    themedGame.game.changeGuessPeg(at: index)
+                    game.changeGuessPeg(at: index)
                 }
             }
     }
@@ -77,7 +84,7 @@ struct CodeBreakerView: View {
     var guessButton: some View {
         Button("Guess") {
             withAnimation {
-                themedGame.game.attemptGuess()
+                game.attemptGuess()
             }
         }
         .font(.system(size: 80))
@@ -88,7 +95,7 @@ struct CodeBreakerView: View {
         var game: CodeBreaker
         let name: String
         
-        static let themes = [
+        static let themes: [String: Set<Peg>] = [
             "Faces": ["😀", "😨", "🥳", "🤪", "😎"],
             "Vehicles": ["🚗", "🚲", "🛩", "⛵"],
             "Standard Colors": ["red", "green", "blue", "yellow"],

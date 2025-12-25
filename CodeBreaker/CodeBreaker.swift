@@ -11,11 +11,11 @@ struct CodeBreaker {
     let masterCode: Code
     var guess: Code
     var attempts = [Code]()
-    let pegChoices: [Peg]
+    let pegChoices: Set<Peg>
     
     init(
         pegCount: Int,
-        pegChoices: [Peg],
+        pegChoices: Set<Peg>,
     ) {
         var masterCode = Code(kind: .master, pegCount: pegCount)
         masterCode.randomize(from: pegChoices)
@@ -41,7 +41,10 @@ struct CodeBreaker {
     }
     
     mutating func changeGuessPeg(at index: Int) {
-        guess.pegs[index] = pegChoices
+        let pegChoices = pegChoices
+            .sorted()
+        
+        return guess.pegs[index] = pegChoices
             .firstIndex(of: guess.pegs[index])
             .map { pegChoices[($0 + 1) % pegChoices.count] }
         ?? pegChoices.first
@@ -68,17 +71,17 @@ struct Code {
         case unknown
     }
     
-    mutating func randomize(from pegChoices: [Peg]) {
+    mutating func randomize(from pegChoices: Set<Peg>) {
         pegs.indices
             .forEach {
                 pegs[$0] = pegChoices.randomElement() ?? .missing
             }
     }
     
-    var matches: [Match] {
+    var matches: [Match]? {
         switch kind {
         case .attempt(let matches): matches
-        default: .init(repeating: .noMatch, count: pegs.count)
+        default: nil
         }
     }
     
